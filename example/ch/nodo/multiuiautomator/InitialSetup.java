@@ -15,18 +15,25 @@
 
 package ch.nodo.multiuiautomator;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import com.android.uiautomator.core.UiDevice;
 import com.android.uiautomator.core.UiObject;
 import com.android.uiautomator.core.UiScrollable;
 import com.android.uiautomator.core.UiSelector;
 import com.android.uiautomator.testrunner.UiAutomatorTestCase;
 
+import static org.junit.Assert.*;
+
 public class InitialSetup extends UiAutomatorTestCase {
 
-	protected void setUp() throws Exception {
-		super.setUp();
+	UiDevice mDevice;
+	
+	@Before
+	public void setUp() {
 
-		createEmulator("first");
+		mDevice = getEmulatorController("first").getUiDevice();
 
 		/*
 		
@@ -42,17 +49,16 @@ public class InitialSetup extends UiAutomatorTestCase {
 		*/
 	}
 
+	@Test
 	public void testInitialSetup() throws Exception {
 
-		UiDevice uiDevice = getUiDevice("first");
+		mDevice.pressHome();
 
-		uiDevice.pressHome();
-
-		UiObject okButton = new UiObject(uiDevice, new UiSelector().text("OK"));
+		UiObject okButton = new UiObject(mDevice, new UiSelector().text("OK"));
 
 		okButton.click();
 
-		UiObject allAppsButton = new UiObject(uiDevice,	new UiSelector().description("Apps"));
+		UiObject allAppsButton = new UiObject(mDevice,	new UiSelector().description("Apps"));
 
 		allAppsButton.waitForExists(1000);
 
@@ -62,18 +68,18 @@ public class InitialSetup extends UiAutomatorTestCase {
 		
 		okButton.click();
 		
-		UiObject appsTab = new UiObject(uiDevice, new UiSelector().text("Apps"));
+		UiObject appsTab = new UiObject(mDevice, new UiSelector().text("Apps"));
 
 		appsTab.click();
 
-		UiScrollable appViews = new UiScrollable(uiDevice, new UiSelector().scrollable(true));
+		UiScrollable appViews = new UiScrollable(mDevice, new UiSelector().scrollable(true));
 
 		appViews.setAsHorizontalList();
 
 		UiObject settingsApp = appViews.getChildByText(new UiSelector().className("android.widget.TextView"), "Settings");
 		settingsApp.clickAndWaitForNewWindow();
 
-		UiObject settingsValidation = new UiObject(uiDevice, new UiSelector().packageName("com.android.settings"));
+		UiObject settingsValidation = new UiObject(mDevice, new UiSelector().packageName("com.android.settings"));
 		assertTrue("Unable to detect Settings", settingsValidation.exists());
 
 	}

@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
+import java.util.HashMap;
 
 import com.android.uiautomator.core.UiDevice;
 import com.github.uiautomatorstub.AutomatorService;
@@ -38,6 +39,8 @@ import com.googlecode.jsonrpc4j.ProxyUtil;
  *
  */
 public class SdkTools {
+	
+	private static HashMap<String, EmulatorController> mActiveEmulators = new HashMap<String,EmulatorController>();	
 	
 	private String mSdkPath;
 	private String mAndroidToolPath;
@@ -96,7 +99,15 @@ public class SdkTools {
 	 * @return
 	 */
 	public EmulatorController createEmulatorController(String name) {
-		return new EmulatorController(name);
+		
+		EmulatorController emulator = mActiveEmulators.get(name);
+		
+		if (emulator == null) {
+			emulator = new EmulatorController(name);
+			mActiveEmulators.put(name, emulator);
+		}
+		
+		return emulator;
 	}
 
 	
@@ -125,11 +136,13 @@ public class SdkTools {
 		 */
 		public void start() {
 			
+			if (mProcess != null) return;
+			
 			mPort = findEmptyPort(5556, 5680);
 			
 			try {
 				
-				String [] command = { mEmulatorPath, "-avd", mName , 
+				String [] command = { mEmulatorPath, "-scale", "0.6" , "-no-boot-anim", "-noaudio", "-avd", mName , 
 													 "-port", Integer.toString(mPort)};
 				mProcess = Runtime.getRuntime().exec(command);
 				
@@ -184,6 +197,8 @@ public class SdkTools {
 		 */
 		public void create() {
 
+			if ( isCreated() ) return;
+			
 			String [] command = { mAndroidToolPath, "create", "avd", "-n", mName, "-t", "android-19", 
 													"--abi", "x86", "-d", "5.1in WVGA" };
 			
@@ -284,6 +299,21 @@ public class SdkTools {
 
 			
 		}
+
+		/**
+		 * 
+		 * Removes the specified application from the device
+		 * 
+		 * @param apk
+		 */
+		public void uninstallApplication(String packageName) {
+
+			String [] command = { mAdbPath, "-s",  "emulator-" + mPort, "uninstall", packageName};
+
+			Subprocess.checkCall(command);
+
+			
+		}
 		
 		/**
 		 * 
@@ -379,7 +409,7 @@ public class SdkTools {
 					AutomatorService.class.getClassLoader(),
 					AutomatorService.class, client);
 			
-			return new UiDevice(service);
+			return new UiDevice(this, service);
 		}
 		
 		/**
@@ -388,6 +418,10 @@ public class SdkTools {
 		 * 
 		 */		
 		public void startUIAutomatorServer() {
+			
+			if (mAutomatorProcess != null ) {
+				return;
+			}
 			
 			mAutomatorPort = findEmptyPort(9008,9030);
 			forwardPort("tcp:" + mAutomatorPort, "tcp:9008");		

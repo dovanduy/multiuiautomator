@@ -26,6 +26,8 @@ import java.io.File;
 import android.graphics.Point;
 import android.os.RemoteException;
 
+import ch.nodo.multiuiautomator.SdkTools.EmulatorController;
+
 import com.github.uiautomatorstub.AutomatorService;
 import com.github.uiautomatorstub.DeviceInfo;
 import com.github.uiautomatorstub.NotImplementedException;
@@ -40,9 +42,15 @@ public class UiDevice {
 
 	private AutomatorService mAutomatorService;
 	private boolean mCompressed;
+	private EmulatorController mController;
 
-	public UiDevice(AutomatorService automatorService) {
+	public UiDevice(EmulatorController controller, AutomatorService automatorService) {
 		this.mAutomatorService = automatorService;
+		this.mController= controller; 
+	}
+	
+	public EmulatorController getEmulatorController() {
+		return mController;
 	}
 	
     /**
