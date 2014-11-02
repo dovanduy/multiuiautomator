@@ -19,7 +19,7 @@ public class ObjInfo {
 
 	private Rect bounds;
 	private Rect visibleBounds;
-	private int chileCount;
+	private int childCount;
 	private String className;
 	private String contentDescription;
 	private String packageName;
@@ -54,12 +54,12 @@ public class ObjInfo {
 		this.visibleBounds = visibleBounds;
 	}
 
-	public int getChileCount() {
-		return chileCount;
+	public int getChildCount() {
+		return childCount;
 	}
 
-	public void setChileCount(int chileCount) {
-		this.chileCount = chileCount;
+	public void setChildCount(int chileCount) {
+		this.childCount = chileCount;
 	}
 
 	public String getClassName() {

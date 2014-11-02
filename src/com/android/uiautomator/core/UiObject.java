@@ -146,7 +146,7 @@ public class UiObject {
      * @since API Level 16
      */
     public int getChildCount() throws UiObjectNotFoundException {
-        return mAutomatorService.objInfo(mRetriever.getObjectId()).getChileCount();
+        return mAutomatorService.objInfo(mRetriever.getObjectId()).getChildCount();
     }
 
     /**
